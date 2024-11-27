@@ -795,6 +795,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(EXT1_DIR_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : LB1_OUT_Pin */
+  GPIO_InitStruct.Pin = LB1_OUT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(LB1_OUT_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : FEED_EN_Pin */
   GPIO_InitStruct.Pin = FEED_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -873,7 +879,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : LB3_OUT_Pin */
   GPIO_InitStruct.Pin = LB3_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(LB3_OUT_GPIO_Port, &GPIO_InitStruct);
 
@@ -916,8 +922,8 @@ void processCommand(char *command)
     	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
     	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
     	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
-    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
-    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
     }
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -933,17 +939,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
     }
 }
+
 //implementing the interrupt from Light Barriers
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
 	{
-	    HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
-    	    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
-    	    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Start PA0 L3 pwm
-    	    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PB0 L4 pwm
-    	    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Start PB10 L1 pwm
-    	    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
+	 HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
+     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
+     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Start PA0 L3 pwm
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PB0 L4 pwm
+     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Start PB10 L1 pwm
+   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
 	}
 }
 /* USER CODE END 4 */
