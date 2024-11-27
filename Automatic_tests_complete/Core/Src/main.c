@@ -59,6 +59,7 @@ UART_HandleTypeDef huart3;
 #define RX_BUFFER_SIZE 128
 volatile uint8_t dataReceived = 0;
 uint8_t rxBuffer[RX_BUFFER_SIZE];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -126,15 +127,31 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
+//  //Start PWM channels
+//
+//   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);//Extruder 1 pwm
+//   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);//Extruder 2 pwm
+//   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);//Feed 1 pwm
+//   HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);//Feed 2 pwm
+//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);//L1 pwm
+//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);//L2 pwm
+//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);//L3 pwm
+//   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);//L4 pwm
+
   // Start UART reception in interrupt mode
   HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+	  if (dataReceived){
+//		   processCommand();
+	 		  dataReceived = 0;
+	 	  }
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -446,7 +463,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 125;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -504,7 +521,7 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 125;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -557,7 +574,7 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 125;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
@@ -610,7 +627,7 @@ static void MX_TIM12_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 125;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim12, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
@@ -907,13 +924,13 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void processCommand(char *command)
 {
-    if (strcmp(command, "START") == 0)
+	if (strcmp(command, "START") == 0)
     {
         // Start the extruder motors
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
-    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
     }
-    else if (strcmp(command, "STOP") == 0)
+	else if (strcmp(command, "STOP") == 0)
     {
     	 // Stop all motors and LEDs
     	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
@@ -922,8 +939,8 @@ void processCommand(char *command)
     	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
     	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
     	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
-    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
-    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
     }
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -945,12 +962,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
 	{
-     HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
+	 HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
      HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
      HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Start PA0 L3 pwm
-     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PB0 L4 pwm
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PB0 L4 pwm
      HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Start PB10 L1 pwm
-     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
+   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
 	}
 }
 /* USER CODE END 4 */
