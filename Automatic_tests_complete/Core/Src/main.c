@@ -936,7 +936,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //implementing the interrupt from Light Barriers
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
+	if (GPIO_Pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
 	{
 	    HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
     	    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
