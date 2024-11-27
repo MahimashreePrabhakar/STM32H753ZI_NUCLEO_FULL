@@ -33,7 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define RX_BUFFER_SIZE 128
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,10 +56,8 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-#define RX_BUFFER_SIZE 128
 volatile uint8_t dataReceived = 0;
 uint8_t rxBuffer[RX_BUFFER_SIZE];
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,7 +88,6 @@ void processCommand(char *command);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -127,17 +124,6 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-//  //Start PWM channels
-//
-//   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);//Extruder 1 pwm
-//   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);//Extruder 2 pwm
-//   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);//Feed 1 pwm
-//   HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);//Feed 2 pwm
-//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);//L1 pwm
-//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);//L2 pwm
-//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);//L3 pwm
-//   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);//L4 pwm
-
   // Start UART reception in interrupt mode
   HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
 
@@ -147,11 +133,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	     if (dataReceived) {
-         processCommand((char *)rxBuffer);
-         dataReceived = 0;
-     }
-	  /* USER CODE END WHILE */
+    if (dataReceived) {
+      processCommand((char *)rxBuffer);
+      dataReceived = 0;
+    }
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -246,20 +232,9 @@ void PeriphCommonClock_Config(void)
   */
 static void MX_ADC1_Init(void)
 {
-
-  /* USER CODE BEGIN ADC1_Init 0 */
-
-  /* USER CODE END ADC1_Init 0 */
-
   ADC_MultiModeTypeDef multimode = {0};
   ADC_ChannelConfTypeDef sConfig = {0};
 
-  /* USER CODE BEGIN ADC1_Init 1 */
-
-  /* USER CODE END ADC1_Init 1 */
-
-  /** Common config
-  */
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
@@ -285,16 +260,12 @@ static void MX_ADC1_Init(void)
     Error_Handler();
   }
 
-  /** Configure the ADC multi-mode
-  */
   multimode.Mode = ADC_MODE_INDEPENDENT;
   if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
   {
     Error_Handler();
   }
 
-  /** Configure Regular Channel
-  */
   sConfig.Channel = ADC_CHANNEL_15;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
@@ -306,10 +277,6 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
-
 }
 
 /**
@@ -319,19 +286,8 @@ static void MX_ADC1_Init(void)
   */
 static void MX_ADC3_Init(void)
 {
-
-  /* USER CODE BEGIN ADC3_Init 0 */
-
-  /* USER CODE END ADC3_Init 0 */
-
   ADC_ChannelConfTypeDef sConfig = {0};
 
-  /* USER CODE BEGIN ADC3_Init 1 */
-
-  /* USER CODE END ADC3_Init 1 */
-
-  /** Common config
-  */
   hadc3.Instance = ADC3;
   hadc3.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
   hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
@@ -357,8 +313,6 @@ static void MX_ADC3_Init(void)
     Error_Handler();
   }
 
-  /** Configure Regular Channel
-  */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
@@ -370,10 +324,6 @@ static void MX_ADC3_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN ADC3_Init 2 */
-
-  /* USER CODE END ADC3_Init 2 */
-
 }
 
 /**
@@ -383,15 +333,6 @@ static void MX_ADC3_Init(void)
   */
 static void MX_SPI1_Init(void)
 {
-
-  /* USER CODE BEGIN SPI1_Init 0 */
-
-  /* USER CODE END SPI1_Init 0 */
-
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
@@ -418,10 +359,6 @@ static void MX_SPI1_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN SPI1_Init 2 */
-
-  /* USER CODE END SPI1_Init 2 */
-
 }
 
 /**
@@ -431,17 +368,9 @@ static void MX_SPI1_Init(void)
   */
 static void MX_TIM2_Init(void)
 {
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 2172;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -479,11 +408,7 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
-
 }
 
 /**
@@ -493,17 +418,9 @@ static void MX_TIM2_Init(void)
   */
 static void MX_TIM3_Init(void)
 {
-
-  /* USER CODE BEGIN TIM3_Init 0 */
-
-  /* USER CODE END TIM3_Init 0 */
-
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM3_Init 1 */
-
-  /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 2172;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -532,11 +449,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM3_Init 2 */
-
-  /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
-
 }
 
 /**
@@ -546,17 +459,9 @@ static void MX_TIM3_Init(void)
   */
 static void MX_TIM4_Init(void)
 {
-
-  /* USER CODE BEGIN TIM4_Init 0 */
-
-  /* USER CODE END TIM4_Init 0 */
-
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM4_Init 1 */
-
-  /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 2172;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -585,11 +490,7 @@ static void MX_TIM4_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM4_Init 2 */
-
-  /* USER CODE END TIM4_Init 2 */
   HAL_TIM_MspPostInit(&htim4);
-
 }
 
 /**
@@ -599,17 +500,9 @@ static void MX_TIM4_Init(void)
   */
 static void MX_TIM12_Init(void)
 {
-
-  /* USER CODE BEGIN TIM12_Init 0 */
-
-  /* USER CODE END TIM12_Init 0 */
-
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM12_Init 1 */
-
-  /* USER CODE END TIM12_Init 1 */
   htim12.Instance = TIM12;
   htim12.Init.Prescaler = 2172;
   htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -634,11 +527,7 @@ static void MX_TIM12_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM12_Init 2 */
-
-  /* USER CODE END TIM12_Init 2 */
   HAL_TIM_MspPostInit(&htim12);
-
 }
 
 /**
@@ -648,14 +537,6 @@ static void MX_TIM12_Init(void)
   */
 static void MX_USART2_UART_Init(void)
 {
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
@@ -683,10 +564,6 @@ static void MX_USART2_UART_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
@@ -696,14 +573,6 @@ static void MX_USART2_UART_Init(void)
   */
 static void MX_USART3_UART_Init(void)
 {
-
-  /* USER CODE BEGIN USART3_Init 0 */
-
-  /* USER CODE END USART3_Init 0 */
-
-  /* USER CODE BEGIN USART3_Init 1 */
-
-  /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
   huart3.Init.BaudRate = 9600;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
@@ -731,10 +600,6 @@ static void MX_USART3_UART_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART3_Init 2 */
-
-  /* USER CODE END USART3_Init 2 */
-
 }
 
 /**
@@ -745,8 +610,6 @@ static void MX_USART3_UART_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -916,59 +779,56 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 void processCommand(char *command)
 {
-	if (strcmp(command, "START") == 0)
-    {
-        // Start the extruder motors
+  if (strcmp(command, "START") == 0)
+  {
+    // Start the extruder motors
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
-    }
-	else if (strcmp(command, "STOP") == 0)
-    {
-    	 // Stop all motors and LEDs
-    	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
-    	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // Stop PB8 Extruder 2 pwm
-    	    HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2); // Stop PB15 Feeder 2 pwm
-    	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
-    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
-    	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
-    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
-    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
-    }
-}
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART3)
-    {
-        if (rxBuffer[0] == '\n' || rxBuffer[0] == '\r')
-        {
-            rxBuffer[0] = '\0'; // Null-terminate the string
-            dataReceived = 1;   // Signal that a command is ready to process
-        }
-        // Restart UART reception
-        HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
-    }
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
+  }
+  else if (strcmp(command, "STOP") == 0)
+  {
+    // Stop all motors and LEDs
+    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // Stop PB8 Extruder 2 pwm
+    HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2); // Stop PB15 Feeder 2 pwm
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
+    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
+    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
+    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
+    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
+  }
 }
 
-//implementing the interrupt from Light Barriers
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART3)
+  {
+    if (rxBuffer[0] == '\n' || rxBuffer[0] == '\r')
+    {
+      rxBuffer[0] = '\0'; // Null-terminate the string
+      dataReceived = 1;   // Signal that a command is ready to process
+    }
+    // Restart UART reception
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
+  }
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
-	{
-	 HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
-     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
-     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Start PA0 L3 pwm
+  if (GPIO_Pin == LB1_OUT_Pin || GPIO_Pin == LB2_OUT_Pin || GPIO_Pin == LB3_OUT_Pin || GPIO_Pin == LB4_OUT_Pin)
+  {
+    HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2); // Start PB15 Feeder 2 pwm
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // Start PB9 Feeder 1 pwm
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Start PA0 L3 pwm
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PB0 L4 pwm
-     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Start PB10 L1 pwm
-   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
-	}
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Start PB10 L1 pwm
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4); // Start PB11 L2 pwm
+  }
 }
 /* USER CODE END 4 */
 
@@ -978,13 +838,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -997,9 +854,7 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
