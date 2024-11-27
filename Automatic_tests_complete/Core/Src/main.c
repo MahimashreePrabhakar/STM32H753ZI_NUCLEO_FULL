@@ -54,7 +54,9 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-
+#define RX_BUFFER_SIZE 128
+volatile uint8_t dataReceived = 0;
+uint8_t rxBuffer[RX_BUFFER_SIZE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +73,7 @@ static void MX_TIM12_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void processCommand(char *command);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -122,6 +124,9 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
+    // Start UART reception in interrupt mode
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,7 +134,11 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+if (dataReceived)
+        {
+            processCommand((char *)rxBuffer);
+            dataReceived = 0;
+        }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -893,6 +902,35 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void processCommand(char *command)
+{
+    if (strcmp(command, "start") == 0)
+    {
+        // Start the extruder motor
+        HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Assuming channel 1 is for the extruder
+    }
+    else if (strcmp(command, "stop") == 0)
+    {
+        // Stop all motors and LEDs
+        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop extruder
+        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2); // Stop LED
+        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop feeder
+        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop any other PWM
+    }
+}
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART3)
+    {
+        if (rxBuffer[0] == '\n' || rxBuffer[0] == '\r')
+        {
+            rxBuffer[0] = '\0'; // Null-terminate the string
+            dataReceived = 1;   // Signal that a command is ready to process
+        }
+        // Restart UART reception
+        HAL_UART_Receive_IT(&huart3, (uint8_t *)rxBuffer, RX_BUFFER_SIZE);
+    }
+}
 
 /* USER CODE END 4 */
 
