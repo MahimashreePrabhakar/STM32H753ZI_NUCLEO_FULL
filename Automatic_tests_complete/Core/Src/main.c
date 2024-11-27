@@ -147,10 +147,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (dataReceived){
-//		   processCommand();
-	 		  dataReceived = 0;
-	 	  }
+	     if (dataReceived) {
+         processCommand((char *)rxBuffer);
+         dataReceived = 0;
+     }
 	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
