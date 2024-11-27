@@ -904,15 +904,20 @@ void processCommand(char *command)
     if (strcmp(command, "start") == 0)
     {
         // Start the extruder motor
-        HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Assuming channel 1 is for the extruder
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
     }
     else if (strcmp(command, "stop") == 0)
     {
         // Stop all motors and LEDs
-        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop extruder
-        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2); // Stop LED
-        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop feeder
-        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop any other PWM
+        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
+        HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // Stop PB8 Extruder 2 pwm
+        HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2); // Stop PB15 Feeder 2 pwm
+        HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
+        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
+        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
+	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
+	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
     }
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
