@@ -907,13 +907,13 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void processCommand(char *command)
 {
-    if (strcmp(command, "start") == 0)
+    if (strcmp(command, "START") == 0)
     {
         // Start the extruder motors
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
     }
-    else if (strcmp(command, "stop") == 0)
+    else if (strcmp(command, "STOP") == 0)
     {
     	 // Stop all motors and LEDs
     	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
