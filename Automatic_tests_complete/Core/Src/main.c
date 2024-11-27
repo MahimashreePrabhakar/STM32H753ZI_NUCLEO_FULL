@@ -135,11 +135,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  if (dataReceived)
-	          {
-	              processCommand((char *)rxBuffer);
-	              dataReceived = 0;
-	          }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -799,12 +795,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(EXT1_DIR_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LB1_OUT_Pin */
-  GPIO_InitStruct.Pin = LB1_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(LB1_OUT_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pin : FEED_EN_Pin */
   GPIO_InitStruct.Pin = FEED_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -821,15 +811,15 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : LB2_OUT_Pin */
   GPIO_InitStruct.Pin = LB2_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(LB2_OUT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : THCS1_Pin LB4_OUT_Pin */
-  GPIO_InitStruct.Pin = THCS1_Pin|LB4_OUT_Pin;
+  /*Configure GPIO pin : THCS1_Pin */
+  GPIO_InitStruct.Pin = THCS1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(THCS1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -883,7 +873,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : LB3_OUT_Pin */
   GPIO_InitStruct.Pin = LB3_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(LB3_OUT_GPIO_Port, &GPIO_InitStruct);
 
@@ -894,6 +884,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(EXT1_EN_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : LB4_OUT_Pin */
+  GPIO_InitStruct.Pin = LB4_OUT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(LB4_OUT_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
@@ -903,21 +903,21 @@ void processCommand(char *command)
 {
     if (strcmp(command, "start") == 0)
     {
-        // Start the extruder motor
-        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
+        // Start the extruder motors
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // PC6 Extruder 1 pwm
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // PB8 Extruder 2 pwm
     }
     else if (strcmp(command, "stop") == 0)
     {
-        // Stop all motors and LEDs
-        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
-        HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // Stop PB8 Extruder 2 pwm
-        HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2); // Stop PB15 Feeder 2 pwm
-        HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
-        HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
-        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
-	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
-	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
+    	 // Stop all motors and LEDs
+    	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1); // Stop PC6 Extruder 1 pwm
+    	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // Stop PB8 Extruder 2 pwm
+    	    HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2); // Stop PB15 Feeder 2 pwm
+    	    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4); // Stop PB9 Feeder 1 pwm
+    	    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1); // Stop PA0 L3 pwm
+    	    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); // Stop PB0 L4 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3); // Stop PB10 L1 pwm
+    		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_4); // Stop PB11 L2 pwm
     }
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
